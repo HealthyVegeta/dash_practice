@@ -45,6 +45,9 @@ ADashCharacter::ADashCharacter()
 
 	// Note: The skeletal mesh and anim blueprint references on the Mesh component (inherited from Character) 
 	// are set in the derived blueprint asset named MyCharacter (to avoid direct content references in C++)
+
+  DashDistance = 5000.f;
+  OnDash = false;
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -59,6 +62,8 @@ void ADashCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerInpu
 
 	PlayerInputComponent->BindAxis("MoveForward", this, &ADashCharacter::MoveForward);
 	PlayerInputComponent->BindAxis("MoveRight", this, &ADashCharacter::MoveRight);
+
+  PlayerInputComponent->BindAction("Dash", IE_Pressed, this, &ADashCharacter::Dash);
 
 	// We have 2 versions of the rotation bindings to handle different kinds of devices differently
 	// "turn" handles devices that provide an absolute delta, such as a mouse.
@@ -122,6 +127,30 @@ void ADashCharacter::MoveForward(float Value)
 		const FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
 		AddMovementInput(Direction, Value);
 	}
+}
+
+void ADashCharacter::Dash()
+{
+  if ((Controller != nullptr) && !OnDash)
+  {
+    // find out which way is forward
+    const FRotator Rotation = Controller->GetControlRotation();
+    const FRotator YawRotation(0, Rotation.Yaw, 0);
+
+    // get forward vector
+    const FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
+    
+    GetCharacterMovement()->BrakingFrictionFactor = 0.f;
+    LaunchCharacter(Direction * DashDistance, true, true);
+    OnDash = true;
+    GetWorldTimerManager().SetTimer(UnusedHandle, this, &ADashCharacter::StopDashing, 0.1f, false);
+  }
+}
+
+void ADashCharacter::StopDashing() {
+  GetCharacterMovement()->StopMovementImmediately();
+  GetWorldTimerManager().SetTimer(UnusedHandle, this, &ADashCharacter::ResetDash, 0.2f, false);
+  GetCharacterMovement()->BrakingFrictionFactor = 2.f;
 }
 
 void ADashCharacter::MoveRight(float Value)
