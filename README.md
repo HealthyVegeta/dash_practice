@@ -2,7 +2,7 @@
 언리얼의 기본 캐릭터를 이용하여 대쉬를 구현하는 C++ 프로젝트입니다.
 
 ## Preview
-![Dash](./images/dash_anim.gif)
+![Dash](./Images/dash_anim.gif)
 
 ## Dash 기능구현
 
