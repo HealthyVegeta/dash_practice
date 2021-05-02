@@ -33,10 +33,13 @@ public:
   float DashDistance;
 
   UPROPERTY(EditAnywhere)
-  float OnDash;
+  bool OnDash;
 
   UPROPERTY()
     FTimerHandle UnusedHandle;
+
+  UFUNCTION(BlueprintCallable)
+  bool IsOnDash() { return OnDash; }
 
 protected:
 
