@@ -29,6 +29,18 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category=Camera)
 	float BaseLookUpRate;
 
+  UPROPERTY(EditAnywhere)
+  float DashDistance;
+
+  UPROPERTY(EditAnywhere)
+  bool OnDash;
+
+  UPROPERTY()
+    FTimerHandle UnusedHandle;
+
+  UFUNCTION(BlueprintCallable)
+  bool IsOnDash() { return OnDash; }
+
 protected:
 
 	/** Resets HMD orientation in VR. */
@@ -36,6 +48,15 @@ protected:
 
 	/** Called for forwards/backward input */
 	void MoveForward(float Value);
+
+  /** Called for Ctrl input */
+  void Dash();
+
+  void StopDashing();
+
+  void ResetDash() {
+    OnDash = false;
+  }
 
 	/** Called for side to side input */
 	void MoveRight(float Value);
